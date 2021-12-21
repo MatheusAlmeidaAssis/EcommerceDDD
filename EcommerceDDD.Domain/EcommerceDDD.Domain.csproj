@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\Generics\" />
-    <Folder Include="Interfaces\Services\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\EcommerceDDD.Domain.Core\EcommerceDDD.Domain.Core.csproj" />
   </ItemGroup>
 
 </Project>
