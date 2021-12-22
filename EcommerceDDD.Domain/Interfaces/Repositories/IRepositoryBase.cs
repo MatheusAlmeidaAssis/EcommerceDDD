@@ -12,8 +12,8 @@ namespace EcommerceDDD.Domain.Interfaces.Repositories
 
         public Task<Entity> Delete(int id);
 
-        public Task<Entity> Get(int id);
+        public Entity Get(int id);
 
-        public Task<List<Entity>> Get();
+        public IEnumerable<Entity> Get();
     }
 }

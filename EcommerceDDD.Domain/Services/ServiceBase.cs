@@ -25,14 +25,14 @@ namespace EcommerceDDD.Domain.Services
             return await _repositoryBase.Delete(id);
         }
 
-        public virtual async Task<Entity> Get(int id)
+        public virtual Entity Get(int id)
         {
-            return await _repositoryBase.Get(id);
+            return _repositoryBase.Get(id);
         }
 
-        public virtual async Task<List<Entity>> Get()
+        public virtual IEnumerable<Entity> Get()
         {
-            return await _repositoryBase.Get();
+            return _repositoryBase.Get();
         }
 
         public virtual async Task<Entity> Update(Entity entity)
