@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EcommerceDDD.Application.Core\EcommerceDDD.Application.Core.csproj" />
+    <ProjectReference Include="..\EcommerceDDD.Domain\EcommerceDDD.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

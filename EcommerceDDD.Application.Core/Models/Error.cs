@@ -1,33 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EcommerceDDD.Domain.Core.Notifications
+namespace EcommerceDDD.Application.Core.Models
 {
-    public class Notification
+    public class Error
     {
-        [NotMapped]
-        public string Nome { get; set; }
+        public string NomeCampo { get; set; }
 
-        [NotMapped]
         public string Mensagem { get; set; }
 
-        [NotMapped]
-        public List<Notification> Notifications;
+        public List<Error> Errors;
 
-        public Notification()
+        public Error()
         {
-            Notifications = new List<Notification>();
+            Errors = new List<Error>();
         }
 
         public bool Valida(string valor)
         {
             if (string.IsNullOrWhiteSpace(valor))
             {
-                Notifications.Add(new Notification
+                Errors.Add(new Error
                 {
                     Mensagem = "Campo Obrigatório",
-                    Nome = valor.GetType().Name
+                    NomeCampo = valor.GetType().Name
                 });
                 return false;
             }
@@ -38,10 +34,10 @@ namespace EcommerceDDD.Domain.Core.Notifications
         {
             if (valor < 1)
             {
-                Notifications.Add(new Notification
+                Errors.Add(new Error
                 {
                     Mensagem = "Valor deve ser maior que 0",
-                    Nome = valor.GetType().Name
+                    NomeCampo = valor.GetType().Name
                 });
                 return false;
             }

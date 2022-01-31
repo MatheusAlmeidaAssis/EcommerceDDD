@@ -1,13 +1,14 @@
 ﻿using EcommerceDDD.Domain.Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace EcommerceDDD.Infrastructure.Data
 {
-    public class ContextBase : DbContext
+    public class ContextBase : IdentityDbContext<IdentityUser>
     {
         public ContextBase(DbContextOptions<ContextBase> dbContextOptions) : base(dbContextOptions)
         {
@@ -15,57 +16,55 @@ namespace EcommerceDDD.Infrastructure.Data
 
         public DbSet<Produto> Produtos { get; set; }
 
+        public DbSet<Compra> Compras { get; set; }
+        public DbSet<IdentityUser> IdentityUsers { get; set; }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            System.Collections.Generic.IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry> entrys = ChangeTracker.Entries();
-            foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry in entrys)
+            var entries = ChangeTracker.Entries();
+            foreach (var entry in entries)
             {
-                if (entry.Property("DataCadastro") == null && entry.Property("DataAlteracao") == null && entry.Property("DataExclusao") == null)
-                {
+                if (entry.Entity == typeof(IdentityUser))
                     continue;
-                }
 
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Property("DataCadastro").CurrentValue = DateTime.Now;
+                        entry.Property("DataCriacao").CurrentValue = DateTime.Now;
                         entry.Property("DataAlteracao").IsModified = false;
                         entry.Property("DataExclusao").IsModified = false;
                         break;
 
                     case EntityState.Modified:
                         if (entry.Property("DataExclusao").CurrentValue == null)
-                        {
                             entry.Property("DataAlteracao").CurrentValue = DateTime.Now;
-                        }
 
-                        entry.Property("DataCadastro").IsModified = false;
+                        entry.Property("DataCriacao").IsModified = false;
                         break;
                 }
             }
-            return base.SaveChangesAsync();
+            return base.SaveChangesAsync(cancellationToken);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            System.Collections.Generic.IEnumerable<Microsoft.EntityFrameworkCore.Metadata.IMutableProperty> properties = modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetProperties());
-            foreach (Microsoft.EntityFrameworkCore.Metadata.IMutableProperty property in properties)
+            modelBuilder.Entity<IdentityUser>()
+                .ToTable("dbo.AspNetUsers").HasKey(t => t.Id);
+            var entities = modelBuilder.Model.GetEntityTypes();
+            foreach (var entity in entities)
             {
-                if (property.ClrType == typeof(string))
+                var properties = entity.GetProperties();
+                foreach (var property in properties)
                 {
-                    property.SetColumnType("varchar(100)");
+                    if (property.ClrType == typeof(string))
+                        property.SetColumnType("varchar(100)");
+                    else if (property.ClrType == typeof(decimal))
+                        property.SetColumnType("decimal(12,2)");
+                    else if (entity.ClrType == typeof(DateTime))
+                        property.SetColumnType("datetime2(7)");
                 }
-                else if (property.ClrType == typeof(decimal))
-                {
-                    property.SetColumnType("decimal(12,2)");
-                }
-                else if (property.ClrType == typeof(DateTime))
-                {
-                    property.SetColumnType("datetime2(7)");
-                }
-
-                base.OnModelCreating(modelBuilder);
             }
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
